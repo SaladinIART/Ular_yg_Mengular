@@ -9,7 +9,7 @@ WIDTH, HEIGHT = 1000, 700
 GAME_WIDTH, GAME_HEIGHT = 800, 600
 GRID_SIZE = 20
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Snake Game v1.0")
+pygame.display.set_caption("Snake Game v1.1")
 clock = pygame.time.Clock()
 BLACK, WHITE, RED, GREEN, GRAY = (0, 0, 0), (255, 255, 255), (255, 0, 0), (0, 255, 0), (100, 100, 100)
 
@@ -17,9 +17,10 @@ BLACK, WHITE, RED, GREEN, GRAY = (0, 0, 0), (255, 255, 255), (255, 0, 0), (0, 25
 def save_high_score(score):
     file_path = os.path.join(os.getcwd(), "high_scores.txt")
     high_scores = []
-    if os.path.exists(file_path):
-        with open(file_path, "r") as f:
-            high_scores = [int(line.strip()) for line in f]
+    if not os.path.exists(file_path):
+        open(file_path, 'w').close()
+    with open(file_path, "r") as f:
+        high_scores = [int(line.strip()) for line in f if line.strip().isdigit()]
     high_scores.append(score)
     high_scores.sort(reverse=True)
     high_scores = high_scores[:5]
@@ -75,6 +76,32 @@ def move_snake(snake, dx, dy):
     snake.insert(0, new_head)
     return new_head
 
+# Pause Function with Dimming Effect
+def pause_game():
+    # Draw a semi-transparent overlay
+    overlay = pygame.Surface((WIDTH, HEIGHT))
+    overlay.set_alpha(150)  # Set transparency level (0-255, where 255 is fully opaque)
+    overlay.fill(BLACK)
+    screen.blit(overlay, (0, 0))
+
+    # Display pause text
+    font = pygame.font.Font(None, 48)
+    pause_text = font.render("Game Paused", True, WHITE)
+    continue_text = font.render("Press C to Continue", True, WHITE)
+    screen.blit(pause_text, (WIDTH // 2 - pause_text.get_width() // 2, HEIGHT // 2 - 40))
+    screen.blit(continue_text, (WIDTH // 2 - continue_text.get_width() // 2, HEIGHT // 2 + 10))
+    pygame.display.flip()
+
+    paused = True
+    while paused:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_c:  # Key to continue the game
+                    paused = False
+
 # Main Game Loop
 def main():
     snake = [[GAME_WIDTH // 2, GAME_HEIGHT // 2]]
@@ -95,6 +122,8 @@ def main():
                     dx, dy = -GRID_SIZE, 0
                 elif event.key == pygame.K_RIGHT and dx == 0:
                     dx, dy = GRID_SIZE, 0
+                elif event.key == pygame.K_SPACE:  # Key to pause the game
+                    pause_game()
 
         # Move the snake
         new_head = move_snake(snake, dx, dy)
