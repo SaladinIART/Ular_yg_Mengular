@@ -10,6 +10,11 @@
         "timestamp": 8100
     },
     {
+        "score": 3,
+        "player": "Player",
+        "timestamp": 17333
+    },
+    {
         "score": 1,
         "player": "Player",
         "timestamp": 12494
@@ -18,10 +23,5 @@
         "score": 1,
         "player": "Player",
         "timestamp": 24091
-    },
-    {
-        "score": 1,
-        "player": "Player",
-        "timestamp": 35323
     }
 ]
