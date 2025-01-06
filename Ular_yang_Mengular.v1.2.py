@@ -10,7 +10,7 @@ WIDTH, HEIGHT = 1000, 700
 GAME_WIDTH, GAME_HEIGHT = 800, 600
 GRID_SIZE = 20
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Snake Game v1.2")
+pygame.display.set_caption("Snake Game v1.3")
 clock = pygame.time.Clock()
 BLACK, WHITE, RED, GREEN, GRAY = (0, 0, 0), (255, 255, 255), (255, 0, 0), (0, 255, 0), (100, 100, 100)
 
@@ -60,6 +60,30 @@ def draw_grid():
     for y in range(0, GAME_HEIGHT, GRID_SIZE):
         pygame.draw.line(screen, GRAY, (0, y), (GAME_WIDTH, y))
 
+def draw_side_panel(score, high_score):
+    font = pygame.font.Font(None, 36)
+
+    # Draw the panel background
+    pygame.draw.rect(screen, GRAY, (GAME_WIDTH, 0, WIDTH - GAME_WIDTH, HEIGHT))
+
+    # Current Score
+    score_text = font.render(f"Score: {score}", True, WHITE)
+    screen.blit(score_text, (GAME_WIDTH + 20, 20))
+
+    # Session High Score
+    high_score_text = font.render(f"High Score: {high_score}", True, WHITE)
+    screen.blit(high_score_text, (GAME_WIDTH + 20, 60))
+
+    # Instructions
+    instructions = [
+        "Controls:",
+        "Arrow Keys to Move",
+        "Space to Pause",
+    ]
+    for i, line in enumerate(instructions):
+        instruction_text = font.render(line, True, WHITE)
+        screen.blit(instruction_text, (GAME_WIDTH + 20, 120 + i * 40))
+
 # Game Logic
 def spawn_food(snake):
     while True:
@@ -100,6 +124,7 @@ def main():
     dx, dy = GRID_SIZE, 0
     food = spawn_food(snake)
     score = 0
+    high_score = max([entry["score"] for entry in load_high_scores()] + [0])
     running = True
     while running:
         for event in pygame.event.get():
@@ -136,6 +161,7 @@ def main():
         # Drawing
         screen.fill(BLACK)
         draw_grid()
+        draw_side_panel(score, high_score)
         pygame.draw.rect(screen, RED, (food[0], food[1], GRID_SIZE, GRID_SIZE))
         for segment in snake:
             pygame.draw.rect(screen, GREEN, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
