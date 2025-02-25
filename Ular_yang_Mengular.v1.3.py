@@ -8,11 +8,12 @@ import time
 # Game Configuration
 class Config:
     def __init__(self):
-        self.WIDTH = 1000
-        self.HEIGHT = 700
-        self.GAME_WIDTH = 800
-        self.GAME_HEIGHT = 600
-        self.GRID_SIZE = 20
+        # Optimized for 1920x1200 resolution
+        self.WIDTH = 1400
+        self.HEIGHT = 900
+        self.GAME_WIDTH = 1100
+        self.GAME_HEIGHT = 800
+        self.GRID_SIZE = 25
         self.FPS = 10
         self.DIFFICULTY_SPEEDS = {
             "Easy": 8,
@@ -70,6 +71,10 @@ class SnakeGame:
         self.state = GameState.MENU
         self.difficulty = "Medium"
 
+        # Power-up initialization - explicitly set to None at start
+        self.power_up = None
+        self.current_power_up = None
+
         # Initialize game elements
         self.reset_game()
 
@@ -83,7 +88,7 @@ class SnakeGame:
         self.dx, self.dy = self.config.GRID_SIZE, 0
         self.score = 0
 
-        # Food and power-ups
+        # Food and power-ups - explicitly set power_up to None
         self.food = self.spawn_food()
         self.power_up = None
         self.current_power_up = None
@@ -96,6 +101,7 @@ class SnakeGame:
         while True:
             x = random.randrange(0, self.config.GAME_WIDTH, self.config.GRID_SIZE)
             y = random.randrange(0, self.config.GAME_HEIGHT, self.config.GRID_SIZE)
+            # Fixed the power_up check to handle None case properly
             if [x, y] not in self.snake and (self.power_up is None or [x, y] != [self.power_up.x, self.power_up.y]):
                 return x, y
 
@@ -253,7 +259,7 @@ class SnakeGame:
         for x in range(0, self.config.GAME_WIDTH, self.config.GRID_SIZE):
             pygame.draw.line(self.screen, self.config.GRAY, (x, 0), (x, self.config.GAME_HEIGHT))
         for y in range(0, self.config.GAME_HEIGHT, self.config.GRID_SIZE):
-            pygame.draw.line(self.screen, self.config.GRAY, (0, y), (0, self.config.GAME_HEIGHT))
+            pygame.draw.line(self.screen, self.config.GRAY, (0, y), (self.config.GAME_WIDTH, y))
 
         # Draw food
         pygame.draw.rect(self.screen, self.config.RED,
