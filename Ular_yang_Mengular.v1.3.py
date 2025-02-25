@@ -291,80 +291,45 @@ class SnakeGame:
 
         pygame.display.flip()
 
-    def draw_side_panel(self):
-        panel_x = self.config.GAME_WIDTH + 10
-        panel_width = self.config.WIDTH - self.config.GAME_WIDTH - 20
+def draw_side_panel(self):
+    panel_x = self.config.GAME_WIDTH + 10
+    panel_width = self.config.WIDTH - self.config.GAME_WIDTH - 20
 
-        # Panel background
-        pygame.draw.rect(self.screen, self.config.GRAY,
-                         (panel_x, 10, panel_width, self.config.GAME_HEIGHT - 20),
-                         border_radius=5)
+    # Panel background
+    pygame.draw.rect(self.screen, self.config.GRAY,
+                     (panel_x, 10, panel_width, self.config.GAME_HEIGHT - 20),
+                     border_radius=5)
 
-        # Game info
-        font = pygame.font.Font(None, 36)
-        font_small = pygame.font.Font(None, 24)
+    # Game info
+    font = pygame.font.Font(None, 36)
+    font_small = pygame.font.Font(None, 24)
 
-        # Score
-        score_text = font.render(f"Score: {self.score}", True, self.config.WHITE)
-        self.screen.blit(score_text, (panel_x + 20, 30))
+    # Score
+    score_text = font.render(f"Score: {self.score}", True, self.config.WHITE)
+    self.screen.blit(score_text, (panel_x + 20, 30))
 
-        # Session high score
-        high_score_text = font.render(f"High: {self.session_high_score}", True, self.config.WHITE)
-        self.screen.blit(high_score_text, (panel_x + 20, 70))
+    # Session high score
+    high_score_text = font.render(f"High: {self.session_high_score}", True, self.config.WHITE)
+    self.screen.blit(high_score_text, (panel_x + 20, 70))
 
-        # Difficulty
-        difficulty_text = font.render(f"Difficulty: {self.difficulty}", True, self.config.WHITE)
-        self.screen.blit(difficulty_text, (panel_x + 20, 110))
+    # Difficulty
+    difficulty_text = font.render(f"Difficulty: {self.difficulty}", True, self.config.WHITE)
+    self.screen.blit(difficulty_text, (panel_x + 20, 110))
 
-        # Active power-up
-        if self.current_power_up is not None:
-            power_up_name = ["Speed Boost", "Double Points", "Shield"][self.current_power_up]
-            time_left = max(0, self.config.POWERUP_DURATION - (time.time() - self.power_up.start_time))
+    # Active power-up - THIS IS THE FIXED SECTION
+    if self.current_power_up is not None and self.power_up is not None and self.power_up.active:
+        power_up_name = ["Speed Boost", "Double Points", "Shield"][self.current_power_up]
+        time_left = max(0, self.config.POWERUP_DURATION - (time.time() - self.power_up.start_time))
 
-            power_up_text = font.render(f"Power-up:", True, self.config.YELLOW)
-            self.screen.blit(power_up_text, (panel_x + 20, 160))
+        power_up_text = font.render(f"Power-up:", True, self.config.YELLOW)
+        self.screen.blit(power_up_text, (panel_x + 20, 160))
 
-            power_up_name_text = font.render(power_up_name, True, self.config.YELLOW)
-            self.screen.blit(power_up_name_text, (panel_x + 20, 190))
+        power_up_name_text = font.render(power_up_name, True, self.config.YELLOW)
+        self.screen.blit(power_up_name_text, (panel_x + 20, 190))
 
-            time_text = font.render(f"Time: {time_left:.1f}s", True, self.config.YELLOW)
-            self.screen.blit(time_text, (panel_x + 20, 220))
-
-        # Controls
-        controls_y = 300
-        controls_text = font.render("Controls:", True, self.config.WHITE)
-        self.screen.blit(controls_text, (panel_x + 20, controls_y))
-
-        controls = [
-            "Arrows: Move Snake",
-            "Space: Pause",
-            "Esc: Quit to Menu"
-        ]
-
-        for i, control in enumerate(controls):
-            control_text = font_small.render(control, True, self.config.WHITE)
-            self.screen.blit(control_text, (panel_x + 20, controls_y + 40 + i * 30))
-
-        # Power-ups legend
-        legend_y = 450
-        legend_text = font.render("Power-ups:", True, self.config.WHITE)
-        self.screen.blit(legend_text, (panel_x + 20, legend_y))
-
-        legends = [
-            ("Yellow", "Speed Boost"),
-            ("Purple", "Double Points"),
-            ("Blue", "Shield")
-        ]
-
-        for i, (color_name, effect) in enumerate(legends):
-            color = self.config.YELLOW if color_name == "Yellow" else \
-                    self.config.PURPLE if color_name == "Purple" else \
-                    self.config.BLUE
-
-            pygame.draw.rect(self.screen, color, (panel_x + 20, legend_y + 40 + i * 30, 15, 15))
-            legend_item_text = font_small.render(f": {effect}", True, self.config.WHITE)
-            self.screen.blit(legend_item_text, (panel_x + 45, legend_y + 38 + i * 30))
-
+        time_text = font.render(f"Time: {time_left:.1f}s", True, self.config.YELLOW)
+        self.screen.blit(time_text, (panel_x + 20, 220))
+        
     def pause_game(self):
         # Draw a semi-transparent overlay
         overlay = pygame.Surface((self.config.WIDTH, self.config.HEIGHT))
