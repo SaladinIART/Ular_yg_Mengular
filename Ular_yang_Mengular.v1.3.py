@@ -97,6 +97,29 @@ class SnakeGame:
         self.speed_multiplier = 1.0
         self.growth_factor = 1
 
+    def run(self):
+        running = True
+        while running:
+            if self.state == GameState.MENU:
+                self.handle_menu_input()
+                self.draw_menu()
+
+            elif self.state == GameState.PLAYING:
+                self.handle_gameplay_input()
+                self.update_game()
+                self.draw_game()
+
+            elif self.state == GameState.PAUSED:
+                self.handle_pause_input()
+                self.pause_game()
+
+            elif self.state == GameState.GAME_OVER:
+                self.game_over()
+
+            # Control game speed based on difficulty and power-ups
+            fps = self.config.DIFFICULTY_SPEEDS[self.difficulty] * self.speed_multiplier
+            self.clock.tick(fps)
+
     def spawn_food(self):
         while True:
             x = random.randrange(0, self.config.GAME_WIDTH, self.config.GRID_SIZE)
@@ -291,45 +314,45 @@ class SnakeGame:
 
         pygame.display.flip()
 
-def draw_side_panel(self):
-    panel_x = self.config.GAME_WIDTH + 10
-    panel_width = self.config.WIDTH - self.config.GAME_WIDTH - 20
+    def draw_side_panel(self):
+        panel_x = self.config.GAME_WIDTH + 10
+        panel_width = self.config.WIDTH - self.config.GAME_WIDTH - 20
 
-    # Panel background
-    pygame.draw.rect(self.screen, self.config.GRAY,
-                     (panel_x, 10, panel_width, self.config.GAME_HEIGHT - 20),
-                     border_radius=5)
+        # Panel background
+        pygame.draw.rect(self.screen, self.config.GRAY,
+                         (panel_x, 10, panel_width, self.config.GAME_HEIGHT - 20),
+                         border_radius=5)
 
-    # Game info
-    font = pygame.font.Font(None, 36)
-    font_small = pygame.font.Font(None, 24)
+        # Game info
+        font = pygame.font.Font(None, 36)
+        font_small = pygame.font.Font(None, 24)
 
-    # Score
-    score_text = font.render(f"Score: {self.score}", True, self.config.WHITE)
-    self.screen.blit(score_text, (panel_x + 20, 30))
+        # Score
+        score_text = font.render(f"Score: {self.score}", True, self.config.WHITE)
+        self.screen.blit(score_text, (panel_x + 20, 30))
 
-    # Session high score
-    high_score_text = font.render(f"High: {self.session_high_score}", True, self.config.WHITE)
-    self.screen.blit(high_score_text, (panel_x + 20, 70))
+        # Session high score
+        high_score_text = font.render(f"High: {self.session_high_score}", True, self.config.WHITE)
+        self.screen.blit(high_score_text, (panel_x + 20, 70))
 
-    # Difficulty
-    difficulty_text = font.render(f"Difficulty: {self.difficulty}", True, self.config.WHITE)
-    self.screen.blit(difficulty_text, (panel_x + 20, 110))
+        # Difficulty
+        difficulty_text = font.render(f"Difficulty: {self.difficulty}", True, self.config.WHITE)
+        self.screen.blit(difficulty_text, (panel_x + 20, 110))
 
-    # Active power-up - THIS IS THE FIXED SECTION
-    if self.current_power_up is not None and self.power_up is not None and self.power_up.active:
-        power_up_name = ["Speed Boost", "Double Points", "Shield"][self.current_power_up]
-        time_left = max(0, self.config.POWERUP_DURATION - (time.time() - self.power_up.start_time))
+        # Active power-up - THIS IS THE FIXED SECTION
+        if self.current_power_up is not None and self.power_up is not None and self.power_up.active:
+            power_up_name = ["Speed Boost", "Double Points", "Shield"][self.current_power_up]
+            time_left = max(0, self.config.POWERUP_DURATION - (time.time() - self.power_up.start_time))
 
-        power_up_text = font.render(f"Power-up:", True, self.config.YELLOW)
-        self.screen.blit(power_up_text, (panel_x + 20, 160))
+            power_up_text = font.render(f"Power-up:", True, self.config.YELLOW)
+            self.screen.blit(power_up_text, (panel_x + 20, 160))
 
-        power_up_name_text = font.render(power_up_name, True, self.config.YELLOW)
-        self.screen.blit(power_up_name_text, (panel_x + 20, 190))
+            power_up_name_text = font.render(power_up_name, True, self.config.YELLOW)
+            self.screen.blit(power_up_name_text, (panel_x + 20, 190))
 
-        time_text = font.render(f"Time: {time_left:.1f}s", True, self.config.YELLOW)
-        self.screen.blit(time_text, (panel_x + 20, 220))
-        
+            time_text = font.render(f"Time: {time_left:.1f}s", True, self.config.YELLOW)
+            self.screen.blit(time_text, (panel_x + 20, 220))
+
     def pause_game(self):
         # Draw a semi-transparent overlay
         overlay = pygame.Surface((self.config.WIDTH, self.config.HEIGHT))
@@ -490,12 +513,12 @@ def draw_side_panel(self):
 
                 # High Scores button
                 elif (self.config.WIDTH // 2 - 100 <= mouse_pos[0] <= self.config.WIDTH // 2 + 100 and
-                      390 <= mouse_pos[1] <= 440):
+                    390 <= mouse_pos[1] <= 440):
                     self.show_high_scores()
 
                 # Quit button
                 elif (self.config.WIDTH // 2 - 100 <= mouse_pos[0] <= self.config.WIDTH // 2 + 100 and
-                      460 <= mouse_pos[1] <= 510):
+                    460 <= mouse_pos[1] <= 510):
                     pygame.quit()
                     sys.exit()
 
@@ -557,29 +580,6 @@ def draw_side_panel(self):
         # Check for collisions
         if self.check_collision():
             self.state = GameState.GAME_OVER
-
-    def run(self):
-        running = True
-        while running:
-            if self.state == GameState.MENU:
-                self.handle_menu_input()
-                self.draw_menu()
-
-            elif self.state == GameState.PLAYING:
-                self.handle_gameplay_input()
-                self.update_game()
-                self.draw_game()
-
-            elif self.state == GameState.PAUSED:
-                self.handle_pause_input()
-                self.pause_game()
-
-            elif self.state == GameState.GAME_OVER:
-                self.game_over()
-
-            # Control game speed based on difficulty and power-ups
-            fps = self.config.DIFFICULTY_SPEEDS[self.difficulty] * self.speed_multiplier
-            self.clock.tick(fps)
 
 if __name__ == "__main__":
     game = SnakeGame()
