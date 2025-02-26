@@ -513,12 +513,12 @@ class SnakeGame:
 
                 # High Scores button
                 elif (self.config.WIDTH // 2 - 100 <= mouse_pos[0] <= self.config.WIDTH // 2 + 100 and
-                    390 <= mouse_pos[1] <= 440):
+                      390 <= mouse_pos[1] <= 440):
                     self.show_high_scores()
 
                 # Quit button
                 elif (self.config.WIDTH // 2 - 100 <= mouse_pos[0] <= self.config.WIDTH // 2 + 100 and
-                    460 <= mouse_pos[1] <= 510):
+                      460 <= mouse_pos[1] <= 510):
                     pygame.quit()
                     sys.exit()
 
