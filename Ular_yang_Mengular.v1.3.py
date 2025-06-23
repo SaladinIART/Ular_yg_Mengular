@@ -75,6 +75,9 @@ class SnakeGame:
         self.power_up = None
         self.current_power_up = None
 
+        # Obstacles initialization
+        self.obstacles = []  # Add this line
+
         # Initialize game elements
         self.reset_game()
 
@@ -92,6 +95,9 @@ class SnakeGame:
         self.food = self.spawn_food()
         self.power_up = None
         self.current_power_up = None
+
+        # Obstacles - spawn new obstacles
+        self.obstacles = self.spawn_obstacles()  # Add this line
 
         # Game options
         self.speed_multiplier = 1.0
@@ -199,6 +205,15 @@ class SnakeGame:
         # Check if snake hits itself
         if head in self.snake[1:]:
             if self.current_power_up == 2:  # Shield protects from self-collision too
+                self.current_power_up = None
+                self.power_up.active = False
+                self.speed_multiplier = 1.0
+                return False
+            return True
+
+        # Check if snake hits an obstacle
+        if head in self.obstacles:
+            if self.current_power_up == 2:  # Shield protects from obstacles too
                 self.current_power_up = None
                 self.power_up.active = False
                 self.speed_multiplier = 1.0
@@ -316,6 +331,10 @@ class SnakeGame:
 
             pygame.draw.rect(self.screen, color,
                             (segment[0], segment[1], self.config.GRID_SIZE, self.config.GRID_SIZE))
+
+        # Draw obstacles
+        for obs in self.obstacles:
+            pygame.draw.rect(self.screen, self.config.PURPLE, (obs[0], obs[1], self.config.GRID_SIZE, self.config.GRID_SIZE))
 
         # Draw side panel
         self.draw_side_panel()
@@ -593,6 +612,19 @@ class SnakeGame:
         # Check for collisions
         if self.check_collision():
             self.state = GameState.GAME_OVER
+
+    def spawn_obstacles(self, count=10):
+        obstacles = []
+        attempts = 0
+        while len(obstacles) < count and attempts < 1000:
+            x = random.randrange(0, self.config.GAME_WIDTH, self.config.GRID_SIZE)
+            y = random.randrange(0, self.config.GAME_HEIGHT, self.config.GRID_SIZE)
+            pos = [x, y]
+            # Avoid snake, food, power-up
+            if pos not in self.snake and pos != list(self.food) and (self.power_up is None or pos != [self.power_up.x, self.power_up.y]):
+                obstacles.append(pos)
+            attempts += 1
+        return obstacles
 
 if __name__ == "__main__":
     game = SnakeGame()
