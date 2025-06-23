@@ -135,7 +135,7 @@ class SnakeGame:
                 y = random.randrange(0, self.config.GAME_HEIGHT, self.config.GRID_SIZE)
                 if [x, y] not in self.snake and (x, y) != self.food:
                     # Random power-up type (0: Speed Boost, 1: Double Points, 2: Shield)
-                    power_up_type = random.randint(0, 2)
+                    power_up_type = random.randint(0, 4)  # Now 0: Speed, 1: Double, 2: Shield, 3: Slow, 4: Shrink
                     return PowerUp(x, y, power_up_type)
         return None
 
@@ -144,8 +144,16 @@ class SnakeGame:
             self.speed_multiplier = 1.5
         elif power_up_type == 1:  # Double Points
             self.growth_factor = 2
-        elif power_up_type == 2:  # Shield (implemented in collision detection)
+        elif power_up_type == 2:  # Shield
             pass
+        elif power_up_type == 3:  # Slow Motion
+            self.speed_multiplier = 0.5
+        elif power_up_type == 4:  # Shrink Snake
+            # Remove 3 segments if possible, but leave at least the head
+            if len(self.snake) > 4:
+                self.snake = self.snake[:-3]
+            else:
+                self.snake = self.snake[:1]
 
         self.current_power_up = power_up_type
         self.power_up.activate(self.config.POWERUP_DURATION)
@@ -341,7 +349,8 @@ class SnakeGame:
 
         # Active power-up - THIS IS THE FIXED SECTION
         if self.current_power_up is not None and self.power_up is not None and self.power_up.active:
-            power_up_name = ["Speed Boost", "Double Points", "Shield"][self.current_power_up]
+            power_up_names = ["Speed Boost", "Double Points", "Shield", "Slow Motion", "Shrink Snake"]
+            power_up_name = power_up_names[self.current_power_up]
             time_left = max(0, self.config.POWERUP_DURATION - (time.time() - self.power_up.start_time))
 
             power_up_text = font.render(f"Power-up:", True, self.config.YELLOW)
