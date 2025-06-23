@@ -440,14 +440,18 @@ class SnakeGame:
         font_large = pygame.font.Font(None, 72)
         font = pygame.font.Font(None, 36)
 
+        # Changed message here
         game_over_text = font_large.render("GAME OVER", True, self.config.RED)
+        try_again_text = font.render("Try Again!", True, self.config.YELLOW)
         score_text = font.render(f"Your Score: {self.score}", True, self.config.WHITE)
 
         continue_text = font.render("Press SPACE to Play Again", True, self.config.WHITE)
         menu_text = font.render("Press ESC for Main Menu", True, self.config.WHITE)
 
         self.screen.blit(game_over_text,
-                         (self.config.WIDTH // 2 - game_over_text.get_width() // 2, self.config.HEIGHT // 2 - 100))
+                         (self.config.WIDTH // 2 - game_over_text.get_width() // 2, self.config.HEIGHT // 2 - 120))
+        self.screen.blit(try_again_text,
+                         (self.config.WIDTH // 2 - try_again_text.get_width() // 2, self.config.HEIGHT // 2 - 60))
         self.screen.blit(score_text,
                          (self.config.WIDTH // 2 - score_text.get_width() // 2, self.config.HEIGHT // 2 - 20))
         self.screen.blit(continue_text,
